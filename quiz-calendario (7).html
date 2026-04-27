@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jinu, Rumi e il Segreto del Tempo</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --viola: #534AB7;
+    --viola-light: #EEEDFE;
+    --viola-dark: #26215C;
+    --verde: #0F6E56;
+    --verde-light: #E1F5EE;
+    --rosso-light: #FCEBEB;
+    --rosso: #E24B4A;
+    --giallo-light: #FAEEDA;
+    --giallo: #633806;
+    --blu-light: #E6F1FB;
+    --blu: #0C447C;
+    --bg: #F7F6FF;
+    --card: #FFFFFF;
+    --testo: #1A1A2E;
+    --testo2: #555577;
+    --bordo: #E2E0F5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; padding: 1rem; }
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 10% 10%, rgba(83,74,183,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 90%, rgba(15,110,86,0.06) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .app { max-width: 560px; margin: 0 auto; position: relative; z-index: 1; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .card {
+    background: var(--card); border: 1.5px solid var(--bordo); border-radius: 24px;
+    padding: 2rem 1.75rem; margin-bottom: 1rem; box-shadow: 0 4px 24px rgba(83,74,183,0.08);
+  }
+  .hero-emoji { font-size: 40px; text-align: center; margin-bottom: 0.75rem; }
+  .hero-title {
+    font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 700;
+    color: var(--viola-dark); text-align: center; margin-bottom: 0.5rem; line-height: 1.3;
+  }
+  .hero-motivazione {
+    background: var(--viola-light); border-radius: 16px; padding: 1rem 1.25rem;
+    margin: 1rem 0 1.75rem; font-size: 14px; color: var(--viola-dark);
+    line-height: 1.8; border-left: 4px solid var(--viola);
+  }
+  .hero-motivazione strong { color: var(--viola); }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--testo2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  input[type=text], select {
+    width: 100%; margin-bottom: 1.25rem; padding: 12px 16px;
+    border: 1.5px solid var(--bordo); border-radius: 12px; font-size: 15px;
+    font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--testo); transition: border-color 0.2s;
+  }
+  input[type=text]:focus, select:focus { outline: none; border-color: var(--viola); }
+  .btn {
+    display: block; width: 100%; padding: 14px; border-radius: 14px; font-size: 16px;
+    font-weight: 700; font-family: 'Nunito', sans-serif; cursor: pointer; text-align: center;
+    border: none; margin-bottom: 0.75rem; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn-quiz { background: var(--verde); color: var(--verde-light); box-shadow: 0 4px 16px rgba(15,110,86,0.25); }
+  .btn-back { background: var(--bg); color: var(--testo2); border: 1.5px solid var(--bordo); font-size: 14px; padding: 10px; }
+  .btn-next { background: var(--viola); color: var(--viola-light); box-shadow: 0 4px 16px rgba(83,74,183,0.25); display: none; margin-top: 0.75rem; }
+  .progress-wrap { margin-bottom: 1.25rem; }
+  .progress-bar { height: 8px; background: var(--bordo); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--viola), #8B80E8); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+  .progress-label { font-size: 11px; color: var(--testo2); text-align: right; margin-top: 4px; }
+  .name-tag { font-size: 13px; color: var(--testo2); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .name-tag strong { color: var(--testo); }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; background: var(--blu-light); color: var(--blu); }
+  .tipo-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; margin-right: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .tipo-vf { background: var(--giallo-light); color: var(--giallo); }
+  .tipo-mc { background: var(--verde-light); color: var(--verde); }
+  .question-text { font-family: 'Baloo 2', cursive; font-size: 17px; font-weight: 600; color: var(--testo); margin-bottom: 1.25rem; line-height: 1.5; }
+  .option-btn {
+    display: block; width: 100%; text-align: left; padding: 12px 16px; margin-bottom: 0.6rem;
+    border: 1.5px solid var(--bordo); border-radius: 12px; background: var(--card);
+    color: var(--testo); font-size: 14px; font-family: 'Nunito', sans-serif; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; line-height: 1.4;
+  }
+  .option-btn:hover:not(.disabled) { background: var(--viola-light); border-color: var(--viola); transform: translateX(4px); }
+  .option-btn.correct { background: var(--verde-light); border-color: #1D9E75; color: #085041; animation: pulse-green 0.4s ease; }
+  .option-btn.wrong { background: var(--rosso-light); border-color: var(--rosso); color: #501313; animation: shake 0.4s ease; }
+  .option-btn.disabled { cursor: not-allowed; transform: none; }
+  @keyframes pulse-green { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-4px)} 100%{transform:translateX(0)} }
+  @keyframes bounce-in { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+  .feedback { font-size: 14px; font-weight: 600; padding: 10px 14px; border-radius: 12px; margin: 0.75rem 0; }
+  .feedback.ok { background: var(--verde-light); color: #085041; }
+  .feedback.no { background: var(--rosso-light); color: #501313; }
+  .score-circle {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--viola-light), #D4D0FA);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem; border: 3px solid var(--viola);
+    box-shadow: 0 4px 20px rgba(83,74,183,0.2); animation: bounce-in 0.6s ease;
+  }
+  .score-num { font-size: 30px; font-weight: 700; color: var(--viola-dark); font-family: 'Baloo 2', cursive; }
+  .score-tot { font-size: 12px; color: var(--viola); font-weight: 600; }
+  .result-title { font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 700; color: var(--testo); text-align: center; margin-bottom: 0.5rem; }
+  .result-msg { font-size: 15px; color: var(--testo2); text-align: center; margin-bottom: 1.75rem; line-height: 1.7; padding: 0 0.5rem; }
+  .sheet-note { background: var(--bg); border-radius: 12px; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 12px; color: var(--testo2); line-height: 1.7; border: 1px dashed var(--bordo); }
+  .sheet-note strong { color: var(--testo); }
+  .saving { color: var(--testo2); font-size: 12px; margin-top: 0.5rem; text-align: center; }
+  .btn-genially { background: #FF6B6B; color: #fff; box-shadow: 0 4px 16px rgba(255,107,107,0.25); }
+  .firma { margin-top: 2rem; font-size: 13px; color: var(--testo2); font-style: italic; text-align: center; font-family: 'Baloo 2', cursive; letter-spacing: 0.5px; }
+  .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+  .confetto { position: absolute; animation: fall linear forwards; }
+  @keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+  .stars-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .star { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--viola); opacity: 0; animation: twinkle var(--dur) var(--delay) infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.5)} 50%{opacity:0.3;transform:scale(1)} }
+  @media(max-width:420px){ .card{padding:1.5rem 1.25rem;} .hero-title{font-size:20px;} .question-text{font-size:15px;} }
+</style>
+</head>
+<body>
+<div class="stars-bg" id="stars"></div>
+<div class="confetti-container" id="confetti"></div>
+<div class="app">
+
+  <div id="s-home" class="screen active">
+    <div class="card">
+      <div class="hero-emoji">📚✨🛏️</div>
+      <div class="hero-title">Jinu, Rumi e il Segreto del Tempo</div>
+      <div class="hero-motivazione">
+        <strong>Mettiamoci comodi!</strong> 😄<br>
+        Niente sedie scomode oggi... ci vuole un bel divano morbido, ancora meglio il <strong>lettone</strong> con tutti i cuscini! Pigiama? Assolutamente sì. Merenda a portata di mano? Ancora meglio. Rilassiamoci e divertiamoci insieme alla scoperta del <strong>Segreto del Tempo</strong>! 🌟
+      </div>
+      <label for="inp-nome">Come ti chiami?</label>
+      <input type="text" id="inp-nome" placeholder="Scrivi il tuo nome..." maxlength="25"/>
+      <label for="inp-classe">Qual è la tua classe?</label>
+      <select id="inp-classe">
+        <option value="">Scegli la tua classe...</option>
+        <option value="2B">2B</option>
+        <option value="2C">2C</option>
+        <option value="2D">2D</option>
+      </select>
+      <button class="btn btn-quiz" onclick="startQuiz()">🎯 Inizia la sfida di comprensione!</button>
+    </div>
+  </div>
+
+  <div id="s-quiz" class="screen">
+    <div class="card">
+      <div class="name-tag" id="quiz-tag"></div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+        <div class="progress-label" id="prog-label">1 di 21</div>
+      </div>
+      <div class="question-text" id="q-text"></div>
+      <div id="q-opts"></div>
+      <div id="q-fb" class="feedback" style="display:none"></div>
+      <button class="btn btn-next" id="btn-next" onclick="nextQ()">Prossima domanda →</button>
+    </div>
+  </div>
+
+  <div id="s-result" class="screen">
+    <div class="card" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:0.75rem" id="res-emoji">🎉</div>
+      <div class="result-title">Hai finito!</div>
+      <div class="name-tag" id="res-tag" style="justify-content:center;margin-bottom:1.25rem"></div>
+      <div class="score-circle">
+        <div class="score-num" id="res-score">0</div>
+        <div class="score-tot" id="res-tot">su 21</div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <button class="btn btn-quiz" onclick="restartQuiz()">🔄 Riprova il quiz</button>
+      <button class="btn btn-genially" onclick="window.location.href='https://view.genially.com/69dfc30aa1106ebccf215294'">📖 Torna alla storia</button>
+      <button class="btn btn-back" onclick="showScreen('s-home')">← Torna alla home</button>
+      <div class="sheet-note" id="sheet-note"></div>
+      <div class="saving" id="saving-msg"></div>
+      <div class="firma">✏️ Maestra Giusi</div>
+    </div>
+  </div>
+
+</div>
+<script>
+const SHEET_URL="https://script.google.com/macros/s/AKfycby6Wb9nkIKtLCKjejaCirPA7eFGwc3Ys4LqHedFXG_T-Ks1AVyT6ZlTJJz34Cs6Fg7M/exec";
+
+const AC=new(window.AudioContext||window.webkitAudioContext)();
+
+function playTone(freq,type,vol,start,dur){
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(AC.destination);
+  o.type=type;o.frequency.value=freq;
+  const t=AC.currentTime+start;
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(vol,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o.start(t);o.stop(t+dur);
+}
+
+function playCorrect(){
+  [[523,'sine',0.3,0],[659,'sine',0.3,0.12],[784,'sine',0.3,0.24]].forEach(([f,t,v,d])=>playTone(f,t,v,d,0.3));
+}
+function playWrong(){
+  [[300,'sawtooth',0.2,0],[220,'sawtooth',0.2,0.15]].forEach(([f,t,v,d])=>playTone(f,t,v,d,0.25));
+}
+function playStart(){
+  [[392,'sine',0.25,0],[523,'sine',0.25,0.1],[659,'sine',0.25,0.2],[784,'sine',0.25,0.3]].forEach(([f,t,v,d])=>playTone(f,t,v,d,0.35));
+}
+function playWin(){
+  [[523,'sine',0.3,0],[523,'sine',0.3,0.1],[523,'sine',0.3,0.2],[415,'sine',0.3,0.15],[494,'sine',0.3,0.3],[523,'sine',0.3,0.5]].forEach(([f,t,v,d])=>playTone(f,t,v,d,0.4));
+}
+function resumeAudio(){ if(AC.state==='suspended')AC.resume(); }
+
+function lanciaCoriandoli(){
+  const colors=['#534AB7','#0F6E56','#F59E0B','#EC4899','#3B82F6','#10B981'];
+  const c=document.getElementById('confetti');
+  c.innerHTML='';
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.className='confetto';
+    el.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;`;
+    c.appendChild(el);
+  }
+  setTimeout(()=>c.innerHTML='',4000);
+}
+
+const starsEl=document.getElementById('stars');
+for(let i=0;i<18;i++){
+  const s=document.createElement('div');s.className='star';
+  s.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--dur:'+(2+Math.random()*4)+'s;--delay:'+(Math.random()*4)+'s';
+  starsEl.appendChild(s);
+}
+
+const domande=[
+  {tipo:"mc",q:"Come si chiama la bambina che apre il libro magico?",opts:["Luna","Rumi","Sara","Lara"],ans:1},
+  {tipo:"mc",q:"Come si chiama il bambino della storia?",opts:["Luca","Marco","Jinu","Leo"],ans:2},
+  {tipo:"vf",q:"Il calendario è come una mappa: ci dice dove siamo oggi e quanto manca al nostro compleanno.",opts:["Vero","Falso"],ans:0},
+  {tipo:"mc",q:"Quante ore dura un giorno intero?",opts:["12 ore","7 ore","30 ore","24 ore"],ans:3},
+  {tipo:"mc",q:"Come si chiama il lungo viaggio della Terra intorno al Sole?",opts:["Rotazione","Navigazione","Rivoluzione","Stagione"],ans:2},
+  {tipo:"mc",q:"Quanti giorni ha un anno normale?",opts:["300 giorni","365 giorni","400 giorni","52 giorni"],ans:1},
+  {tipo:"vf",q:"Un anno bisestile ha un giorno IN PIÙ rispetto agli altri anni.",opts:["Vero","Falso"],ans:0},
+  {tipo:"mc",q:"Come si chiama l'anno speciale con 366 giorni?",opts:["Anno lungo","Anno speciale","Anno magico","Anno bisestile"],ans:3},
+  {tipo:"vf",q:"Ogni 4 anni si aggiunge un giorno in più: il 29 febbraio.",opts:["Vero","Falso"],ans:0},
+  {tipo:"mc",q:"Quante settimane ha un anno?",opts:["30 settimane","12 settimane","52 settimane","7 settimane"],ans:2},
+  {tipo:"mc",q:"Quanti giorni ha una settimana?",opts:["5 giorni","6 giorni","10 giorni","7 giorni"],ans:3},
+  {tipo:"mc",q:"Quanti mesi ha un anno?",opts:["10 mesi","7 mesi","4 mesi","12 mesi"],ans:3},
+  {tipo:"mc",q:"Qual è il terzo mese dell'anno?",opts:["Gennaio","Febbraio","Aprile","Marzo"],ans:3},
+  {tipo:"mc",q:"Quanti giorni ha novembre?",opts:["28 giorni","29 giorni","31 giorni","30 giorni"],ans:3},
+  {tipo:"mc",q:"Quante stagioni ci sono in un anno?",opts:["2 stagioni","3 stagioni","6 stagioni","4 stagioni"],ans:3},
+  {tipo:"mc",q:"Quale stagione ha le foglie d'oro secondo la storia?",opts:["Primavera","Estate","Inverno","Autunno"],ans:3},
+  {tipo:"mc",q:"A quale pianeta è dedicato il mercoledì?",opts:["Marte","Giove","Saturno","Mercurio"],ans:3},
+  {tipo:"mc",q:"A quale pianeta è dedicato il venerdì?",opts:["Luna","Sole","Marte","Venere"],ans:3},
+  {tipo:"mc",q:"A quale astro è dedicata la domenica?",opts:["Luna","Marte","Saturno","Sole"],ans:3},
+  {tipo:"vf",q:"La domenica sul calendario è scritta in rosso perché è un giorno festivo.",opts:["Vero","Falso"],ans:0},
+  {tipo:"mc",q:"Chi è stato uno dei primi popoli ad inventare il calendario?",opts:["I Romani","I Greci","I Vichinghi","Gli Egizi"],ans:3}
+];
+
+let cq=0,score=0,answered=false,uNome="",uClasse="";
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startQuiz(){
+  resumeAudio();
+  const n=document.getElementById('inp-nome').value.trim();
+  const c=document.getElementById('inp-classe').value;
+  if(!n){alert("Scrivi il tuo nome! 😊");return;}
+  if(!c){alert("Scegli la tua classe! 😊");return;}
+  uNome=n;uClasse=c;cq=0;score=0;
+  playStart();
+  document.getElementById('quiz-tag').innerHTML='Ciao <strong>'+uNome+'</strong><span class="badge">Classe '+uClasse+'</span>';
+  showScreen('s-quiz');renderQ();
+}
+
+function renderQ(){
+  answered=false;
+  const d=domande[cq];
+  document.getElementById('prog').style.width=Math.round((cq/domande.length)*100)+'%';
+  document.getElementById('prog-label').textContent='Domanda '+(cq+1)+' di '+domande.length;
+  const tb=d.tipo==='vf'?'<span class="tipo-badge tipo-vf">✔ Vero / Falso</span>':'<span class="tipo-badge tipo-mc">◉ Scelta multipla</span>';
+  document.getElementById('q-text').innerHTML=tb+'<br>'+d.q;
+  document.getElementById('q-fb').style.display='none';
+  document.getElementById('btn-next').style.display='none';
+  const cont=document.getElementById('q-opts');cont.innerHTML='';
+  d.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='option-btn';b.textContent=o;
+    b.onclick=()=>selectAns(i);cont.appendChild(b);
+  });
+}
+
+function selectAns(i){
+  if(answered)return;
+  resumeAudio();answered=true;
+  const d=domande[cq];
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.classList.add('disabled'));
+  const fb=document.getElementById('q-fb');
+  if(i===d.ans){
+    score++;btns[i].classList.add('correct');
+    fb.className='feedback ok';fb.textContent='✓ Bravissimo/a! Risposta giusta! 🌟';
+    playCorrect();
+  } else {
+    btns[i].classList.add('wrong');btns[d.ans].classList.add('correct');
+    fb.className='feedback no';fb.textContent='✗ Non è corretto. La risposta giusta era: '+d.opts[d.ans];
+    playWrong();
+  }
+  fb.style.display='block';
+  const nb=document.getElementById('btn-next');
+  nb.textContent=cq<domande.length-1?'Prossima domanda →':'Vedi il risultato →';
+  nb.style.display='block';
+}
+
+function nextQ(){ cq++; if(cq<domande.length)renderQ(); else showResult(); }
+
+function showResult(){
+  document.getElementById('prog').style.width='100%';
+  document.getElementById('res-tag').innerHTML='<strong>'+uNome+'</strong><span class="badge">Classe '+uClasse+'</span>';
+  document.getElementById('res-score').textContent=score;
+  document.getElementById('res-tot').textContent='su '+domande.length;
+  const p=score/domande.length;
+  let msg='',emoji='🎉';
+  if(p===1){msg='🌟 Perfetto! Conosci tutti i segreti del tempo! Jinu e Rumi sono orgogliosi di te!';emoji='🏆';playWin();lanciaCoriandoli();}
+  else if(p>=0.8){msg='🎉 Bravissimo/a! Hai capito quasi tutto. Sei un campione!';emoji='🥇';playWin();lanciaCoriandoli();}
+  else if(p>=0.6){msg='😊 Bene! Rileggi la storia e vedrai che la prossima volta fai ancora meglio!';emoji='😊';playCorrect();}
+  else{msg='📚 Rileggi la storia con calma sul tuo lettone... e poi riprova la sfida!';emoji='📚';}
+  document.getElementById('res-emoji').textContent=emoji;
+  document.getElementById('res-msg').textContent=msg;
+  const ts=new Date().toLocaleString('it-IT');
+  document.getElementById('sheet-note').innerHTML='<strong>Registrato!</strong> '+uNome+' · Classe '+uClasse+' · '+score+'/'+domande.length+' · '+ts;
+  document.getElementById('saving-msg').textContent='⏳ Salvataggio in corso...';
+  fetch(SHEET_URL+'?nome='+encodeURIComponent(uNome)+'&classe='+encodeURIComponent(uClasse)+'&punteggio='+score+'&totale='+domande.length+'&data='+encodeURIComponent(ts),{mode:'no-cors'})
+    .then(()=>document.getElementById('saving-msg').textContent='✅ Salvato nel registro della maestra!')
+    .catch(()=>document.getElementById('saving-msg').textContent='⚠️ Salvataggio non riuscito.');
+  showScreen('s-result');
+}
+
+function restartQuiz(){
+  cq=0;score=0;
+  document.getElementById('quiz-tag').innerHTML='Ciao <strong>'+uNome+'</strong><span class="badge">Classe '+uClasse+'</span>';
+  showScreen('s-quiz');renderQ();
+}
+</script>
+</body>
+</html>
